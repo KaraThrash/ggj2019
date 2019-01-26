@@ -5,7 +5,7 @@ using UnityEngine;
 public class ThirdpersonCamera : MonoBehaviour
 {
     public GameObject myfwdobj;
-    public GameObject target;
+    public GameObject target,checkpoint;
     public Quaternion newrot;
     public Quaternion targetRotation;
     public bool movetowards;
@@ -37,42 +37,46 @@ public class ThirdpersonCamera : MonoBehaviour
 
     {
         transform.position = target.transform.position;
-        if (useController == false)
-        {
-            yRot = Input.GetAxis("Mouse X") * XSensitivity;
-            xRot = Input.GetAxis("Mouse Y") * YSensitivity;
-        }
-        else
-        {
-            yRot = Input.GetAxis("4th Axis") * XSensitivity;
-            xRot = Input.GetAxis("5th Axis") * -YSensitivity;
-        }
+        targetRotation = Quaternion.LookRotation(new Vector3(checkpoint.transform.position.x,0, checkpoint.transform.position.z) - transform.position);
+        step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
 
-       // m_CharacterTargetRot *= Quaternion.Euler(-xRot, yRot, 0);
-        //   m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
-        Quaternion rotationDelta = Quaternion.FromToRotation(transform.forward, target.transform.forward);
+       // if (useController == false)
+       // {
+       //     yRot = Input.GetAxis("Mouse X") * XSensitivity;
+       //     xRot = Input.GetAxis("Mouse Y") * YSensitivity;
+       // }
+       // else
+       // {
+       //     yRot = Input.GetAxis("4th Axis") * XSensitivity;
+       //     xRot = Input.GetAxis("5th Axis") * -YSensitivity;
+       // }
+
+       //// m_CharacterTargetRot *= Quaternion.Euler(-xRot, yRot, 0);
+       // //   m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
+       // Quaternion rotationDelta = Quaternion.FromToRotation(transform.forward, target.transform.forward);
 
 
-        if (clampVerticalRotation)
-            m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
+       // if (clampVerticalRotation)
+       //     m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
 
-        if (smooth)
-        {
-            transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
-                smoothTime * Time.deltaTime);
-            transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
-                smoothTime * Time.deltaTime);
-        }
-        else
-        {
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x - xRot, transform.eulerAngles.y + yRot, 0); //m_CharacterTargetRot;
-            
-            //targetRotation = Quaternion.LookRotation(myfwdobj.transform.position - target.transform.position);
-            //step = Mathf.Min(4 * Time.deltaTime, 1.5f);
-            //target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, step);
+       // if (smooth)
+       // {
+       //     transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
+       //         smoothTime * Time.deltaTime);
+       //     transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
+       //         smoothTime * Time.deltaTime);
+       // }
+       // else
+       // {
+       //     transform.eulerAngles = new Vector3(transform.eulerAngles.x - xRot, transform.eulerAngles.y + yRot, 0); //m_CharacterTargetRot;
+       //     target.transform.eulerAngles = new Vector3(0, target.transform.eulerAngles.y + yRot, 0);
+       //     //targetRotation = Quaternion.LookRotation(myfwdobj.transform.position - target.transform.position);
+       //     //step = Mathf.Min(4 * Time.deltaTime, 1.5f);
+       //     //target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, step);
 
-            
-        }
+
+       // }
 
         UpdateCursorLock();
     }

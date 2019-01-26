@@ -7,6 +7,8 @@ TagManager:
   - speed
   - ice
   - lava
+  - basic
+  - checkpoint
   layers:
   - Default
   - TransparentFX
