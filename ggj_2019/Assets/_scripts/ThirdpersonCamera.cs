@@ -7,6 +7,7 @@ public class ThirdpersonCamera : MonoBehaviour
     public GameObject myfwdobj;
     public GameObject target;
     public Quaternion newrot;
+    public Quaternion targetRotation;
     public bool movetowards;
     public float damping;
     public float flyspeed;
@@ -18,7 +19,7 @@ public class ThirdpersonCamera : MonoBehaviour
     public bool smooth;
     public float smoothTime = 5f;
     public bool lockCursor = true;
-    public float rollz;
+    public float step;
 
     private Quaternion m_CharacterTargetRot;
     private Quaternion m_CameraTargetRot;
@@ -47,7 +48,7 @@ public class ThirdpersonCamera : MonoBehaviour
             xRot = Input.GetAxis("5th Axis") * -YSensitivity;
         }
 
-        m_CharacterTargetRot *= Quaternion.Euler(-xRot, yRot, 0);
+       // m_CharacterTargetRot *= Quaternion.Euler(-xRot, yRot, 0);
         //   m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
         Quaternion rotationDelta = Quaternion.FromToRotation(transform.forward, target.transform.forward);
 
@@ -65,7 +66,12 @@ public class ThirdpersonCamera : MonoBehaviour
         else
         {
             transform.eulerAngles = new Vector3(transform.eulerAngles.x - xRot, transform.eulerAngles.y + yRot, 0); //m_CharacterTargetRot;
-            // transform.rotation = m_CameraTargetRot;
+            
+            //targetRotation = Quaternion.LookRotation(myfwdobj.transform.position - target.transform.position);
+            //step = Mathf.Min(4 * Time.deltaTime, 1.5f);
+            //target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, step);
+
+            
         }
 
         UpdateCursorLock();
