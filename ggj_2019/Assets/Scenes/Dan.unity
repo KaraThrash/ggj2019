@@ -12978,7 +12978,7 @@ MonoBehaviour:
   gravity: 10
   frictionApplySpeed: 1
   groundCheckDistance: 0.6
-  sideslidespeed: 5
+  sideslidespeed: 10
   currentSlideSpeed: 0
   driftTimer: 0
   sideRun: 0
@@ -12987,6 +12987,7 @@ MonoBehaviour:
   currentSlideVelocity: {x: 0, y: 0, z: 0}
   canJump: 0
   sliding: 0
+  controllerOn: 1
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
   step: 0
 --- !u!135 &1333559012

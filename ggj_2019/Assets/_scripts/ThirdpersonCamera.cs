@@ -37,8 +37,8 @@ public class ThirdpersonCamera : MonoBehaviour
 
     {
         transform.position = target.transform.position;
-        targetRotation = Quaternion.LookRotation(new Vector3(checkpoint.transform.position.x,0, checkpoint.transform.position.z) - transform.position);
-        step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+        targetRotation = Quaternion.LookRotation(new Vector3((target.transform.forward.x * 5) + target.transform.position.x, 0, (target.transform.forward.z * 5) + target.transform.position.z) - transform.position);
+        step = Mathf.Min(2 * Time.deltaTime, 1.0f);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
 
        // if (useController == false)
@@ -78,7 +78,7 @@ public class ThirdpersonCamera : MonoBehaviour
 
        // }
 
-        UpdateCursorLock();
+       // UpdateCursorLock();
     }
 
     public void SetCursorLock(bool value)
