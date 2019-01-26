@@ -48,7 +48,7 @@ MonoBehaviour:
     z: 20
   cellPrefab: {fileID: 4056231144019142021, guid: 3c0b63bac4e959a4eab0f8143ddedfbd,
     type: 3}
-  generationStepDelay: 0.01
+  generationStepDelay: 0
   passagePrefab: {fileID: 2625066006696700478, guid: ffae147402a7b83438cec49bb6341a7b,
     type: 3}
   wallPrefabs:
@@ -66,11 +66,11 @@ MonoBehaviour:
   - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
     wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
   - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
-    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+    wallMaterial: {fileID: 2100000, guid: 5b14506696f27eb4a9afd329ca14b567, type: 2}
   - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
-    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+    wallMaterial: {fileID: 2100000, guid: 36dbcd77a58b57242b061760704bb071, type: 2}
   - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
-    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+    wallMaterial: {fileID: 2100000, guid: 1b2cf4f226b56314f96a3a9159255f13, type: 2}
   doorPrefab: {fileID: 2795764211604216973, guid: 060688c7497ae1a4ead0df88506f0b95,
     type: 3}
   doorProbability: 0.1
