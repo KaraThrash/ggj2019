@@ -40,11 +40,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 7769951963402897601}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b95a9354b35ed344acff3ba8addaa50, type: 3}
+  m_Script: {fileID: 11500000, guid: 1592517cf81484424a60f86dfcafc7eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generationStepDelay: 0.01
-  sizeX: 20
-  sizeZ: 20
+  size:
+    x: 20
+    z: 20
   cellPrefab: {fileID: 4056231144019142021, guid: 3c0b63bac4e959a4eab0f8143ddedfbd,
     type: 3}
+  generationStepDelay: 0.01
+  passagePrefab: {fileID: 2625066006696700478, guid: ffae147402a7b83438cec49bb6341a7b,
+    type: 3}
+  wallPrefabs:
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 4bd6509513c6fea449a46748cbd1faf7, type: 3}
+  - {fileID: 1202315101616013340, guid: 4c982ff64e5075443a809af72263f68b, type: 3}
+  - {fileID: 1202315101616013340, guid: 68aebea5da8afa949b239cb38aa53304, type: 3}
+  - {fileID: 1202315101616013340, guid: 99dac57b01bbc2841993f55352780a6f, type: 3}
+  roomSettings:
+  - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
+    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+  - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
+    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+  - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
+    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+  - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
+    wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
+  doorPrefab: {fileID: 2795764211604216973, guid: 060688c7497ae1a4ead0df88506f0b95,
+    type: 3}
+  doorProbability: 0.1
