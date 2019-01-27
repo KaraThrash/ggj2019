@@ -110,60 +110,59 @@ public class Player : MonoBehaviour
     }
     public void KeyboardControls()
     {
-        if (sliding == false)
+        if (Input.GetAxis("MouseSlide") == 0)
         {
+            anim.SetFloat("slideSpeed", 0);
+            if (driftTimer >= 0.5f)
+            {
+                // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
+                run += (run * 0.1f) * driftTimer;
+                currentVelocity = transform.forward.normalized * currentVelocity.magnitude * 1.2f;
+                rb.AddForce(Time.deltaTime * transform.forward.normalized * driftTimer * 60.0f, ForceMode.Impulse);
 
-            targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z) - transform.position);
-            step = Mathf.Min(2 * Time.deltaTime, 1.5f);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
+            }
+            driftTimer = 0;
+
+
 
             //transform.LookAt(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z));
             slideIndicator.active = false;
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetAxis("Horizontal") != 0)
             {
-                sideRun = -sideslidespeed;
+                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.right.normalized.x * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.x, transform.position.y, camfoward.transform.right.normalized.z * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.z) - transform.position);
+                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+
             }
-            else if (Input.GetKey(KeyCode.D))
+
+            else
             {
-                sideRun = sideslidespeed;
+                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z) - transform.position);
+                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
             }
-            else { sideRun = 0; }
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
             if (Input.GetKey(KeyCode.W))
             {
-                run = Mathf.Lerp(run, 10.0f, 0.5f * Time.deltaTime);
+
+
+                run = Mathf.Lerp(run, maxSpeed, 2.0f * Time.deltaTime);
             }
             else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime * 0.2f); }
-
-            currentVelocity = (transform.right.normalized * sideRun) + (run * transform.forward.normalized);
-            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, Time.deltaTime);
+            anim.SetFloat("speed", (1.0f / maxSpeed) * run);
+            currentVelocity = Vector3.Lerp(currentVelocity, (run * transform.forward.normalized), Time.deltaTime);
+            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, 2.0f * Time.deltaTime);
         }
         else
         {
-            if (Input.GetKey(KeyCode.A))
-            {
-                sideRun = -sideslidespeed;
-                rb.AddForce(Time.deltaTime * transform.right.normalized * -sideRun, ForceMode.Impulse);
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                sideRun = sideslidespeed;
-                rb.AddForce(Time.deltaTime * transform.right.normalized * -sideRun, ForceMode.Impulse);
-            }
-            transform.Rotate(0, sideRun * 15 * Time.deltaTime, 0);
+            anim.SetFloat("slideSpeed", Input.GetAxis("MouseSlide"));
+            driftTimer = Mathf.Lerp(driftTimer, 3.0f, Time.deltaTime);
+            transform.Rotate(0, Mathf.Sign(Input.GetAxis("MouseSlide")) * 75 * Time.deltaTime, 0);
+            rb.AddForce(Time.deltaTime * transform.right.normalized * -Mathf.Sign(Input.GetAxis("MouseSlide")) * 0.2f, ForceMode.Impulse);
+            slideIndicator.transform.parent.transform.localScale = new Vector3(Mathf.Sign(Input.GetAxis("MouseSlide")), 1, 1);
+            if (slideIndicator.active == false)
+            { slideIndicator.active = true; slideIndicator.GetComponent<Animator>().Play("IntialFire"); }
 
-
-            //rb.AddForce(Time.deltaTime * currentVelocity * transform.right.normalized, ForceMode.Impulse);
-            slideIndicator.active = true;
         }
-        if (Input.GetMouseButton(0))
-        { sliding = true; }
 
-        if (Input.GetMouseButtonUp(0) && sliding == true)
-        {
-            sliding = false;
-            currentVelocity = currentVelocity.magnitude * 4 * transform.forward.normalized;
-            rb.AddForce(Time.deltaTime * currentVelocity, ForceMode.Impulse);
-        }
     }
 
     public bool CheckGround()
