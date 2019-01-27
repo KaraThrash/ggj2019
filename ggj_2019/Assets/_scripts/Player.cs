@@ -52,8 +52,15 @@ public class Player : MonoBehaviour
         {
             TogglePause();
         }
+        if (Input.GetKeyDown(KeyCode.Joystick1Button7) || Input.GetKeyDown(KeyCode.RightShift))
+        {
+            ToggleController();
+        }
 
-
+    }
+    public void ToggleController()
+    {
+        if (controllerOn == true) { controllerOn = false;  } else { controllerOn = true;  }
     }
     public void TogglePause()
     {
@@ -355,6 +362,17 @@ rb.AddForce(Time.deltaTime* transform.forward.normalized* driftTimer * 60.0f, Fo
 
             if (hit.transform.tag == "checkpoint" && lastscoredobj != hit.transform.gameObject)
             {
+                Debug.Log("score");
+                lastscoredobj = hit.transform.gameObject;
+                scoreKeeper.CollectPickup(10);
+            }
+        }
+        if (Physics.Raycast(transform.position, transform.up, out hit, upordown * groundCheckDistance))
+        {
+
+            if (hit.transform.tag == "checkpoint" && lastscoredobj != hit.transform.gameObject)
+            {
+                Debug.Log("score");
                 lastscoredobj = hit.transform.gameObject;
                 scoreKeeper.CollectPickup(10);
             }

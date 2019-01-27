@@ -14271,7 +14271,7 @@ MonoBehaviour:
   currentVelMag: 0
   gravity: 10
   frictionApplySpeed: 1
-  groundCheckDistance: 2
+  groundCheckDistance: 20
   sideslidespeed: 10
   currentSlideSpeed: 0
   driftTimer: 0
@@ -14286,7 +14286,7 @@ MonoBehaviour:
   currentPowerSlideVelocity: {x: 0, y: 0, z: 0}
   canJump: 0
   sliding: 0
-  controllerOn: 0
+  controllerOn: 1
   bumped: 0
   pause: 0
   targetRotation: {x: 0, y: 0, z: 0, w: 0}
