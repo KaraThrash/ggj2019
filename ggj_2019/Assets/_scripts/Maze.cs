@@ -47,10 +47,9 @@ public class Maze : MonoBehaviour {
         transform.localScale = new Vector3(8,8,8);
         Debug.Log("end?  ");
 
-        foreach (Transform go in transform)
-        {
-            gameManager.GetComponent<ObjectSpawning>().SpawnObject(go.transform.position);
-        }
+      
+            gameManager.GetComponent<ObjectSpawning>().SpawnObject(transform);
+        
 
         if (player == null) { player = GameObject.Find("Player"); }
         player.active = true;

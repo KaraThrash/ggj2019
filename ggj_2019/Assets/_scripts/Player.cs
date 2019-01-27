@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject,jumpObj,slideObj,shadowObj,proximityObj,lastscoredobj;
+    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject,jumpObj,slideObj,shadowObj,proximityObj,lastscoredobj,pauseImage;
     public ScoreKeeper scoreKeeper;
     public Transform currentCheckpoint,checkPoints;
     public int currentCheckPoint;
@@ -13,7 +13,7 @@ public class Player : MonoBehaviour
     private Animator anim;
     public float maxSpeed,currentFriction,currentVelMag, gravity,frictionApplySpeed,groundCheckDistance, sideslidespeed,currentSlideSpeed,driftTimer,jumpTimer,powerSlideTimer,slideTimer,sideRun,run;
     public Vector3 currentVelocity,currentSlideVelocity,currentJumpVelocity, currentPowerSlideVelocity;
-    public bool canJump,sliding,controllerOn,bumped;
+    public bool canJump,sliding,controllerOn,bumped,pause;
 
     public Quaternion targetRotation;
     public float step;
@@ -29,25 +29,37 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (transform.position.y < 0.9f)
-        { transform.position = new Vector3(transform.position.x,0.9f,transform.position.z); }
 
-        spriteObject.transform.position = transform.position;
-        spriteObject.transform.rotation = cam.transform.rotation;
-        if (controllerOn == true) { ControllerControls(); }
+        if (pause == true) { }
         else
         {
-            KeyboardControls();
-            
+            if (transform.position.y < 0.9f)
+            { transform.position = new Vector3(transform.position.x, 0.9f, transform.position.z); }
 
+            spriteObject.transform.position = transform.position;
+            spriteObject.transform.rotation = cam.transform.rotation;
+            if (controllerOn == true) { ControllerControls(); }
+            else
+            {
+                KeyboardControls();
+
+
+            }
         }
 
-       
 
-        
-        
+        if (Input.GetKeyDown(KeyCode.Joystick1Button6) || Input.GetKeyDown(KeyCode.Return))
+        {
+            TogglePause();
+        }
+
 
     }
+    public void TogglePause()
+    {
+        if (pause == true) { pause = false; pauseImage.active = false; } else { pause = true; pauseImage.active = true; }
+    }
+
     public void ControllerControls()
     {
       
@@ -190,60 +202,144 @@ public class Player : MonoBehaviour
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
 
     }
-    public void KeyboardControls()
-    {
-        if (Input.GetAxis("MouseSlide") == 0)
+    public void KeyboardControls() { 
+   if (powerSlideTimer > 0)
         {
-            anim.SetFloat("slideSpeed", 0);
-            if (driftTimer >= 0.5f)
+            CheckGround(-1);
+    slideObj.active = true;
+            jumpObj.active = false;
+          // powerSlideTimer -= Time.deltaTime;
+            shadowObj.active = false;
+
+            run = Mathf.Lerp(run, 1.0f, Time.deltaTime* 0.2f);
+            rb.velocity = currentPowerSlideVelocity;
+            currentPowerSlideVelocity = Vector3.Lerp(currentPowerSlideVelocity, Vector3.zero, 0.5f * Time.deltaTime);
+            if (currentPowerSlideVelocity.magnitude< 1) { slideIndicator.active = false; }
+
+anim.SetBool("powerSliding", true);
+            anim.Play("powerSlide");
+            if (Input.GetKeyUp(KeyCode.LeftShift))
             {
-                // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
-                run += (run * 0.1f) * driftTimer;
-                currentVelocity = transform.forward.normalized * currentVelocity.magnitude * 1.2f;
-                rb.AddForce(Time.deltaTime * transform.forward.normalized * driftTimer * 60.0f, ForceMode.Impulse);
-
+                powerSlideTimer = 0; anim.SetBool("powerSliding", false);
             }
-            driftTimer = 0;
-
-
-
-            //transform.LookAt(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z));
-            slideIndicator.active = false;
-            if (Input.GetAxis("Horizontal") != 0)
-            {
-                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.right.normalized.x * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.x, transform.position.y, camfoward.transform.right.normalized.z * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.z) - transform.position);
-                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
-
-            }
-
-            else
-            {
-                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z) - transform.position);
-                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
-            }
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
-            if (Input.GetKey(KeyCode.W))
-            {
-
-
-                run = Mathf.Lerp(run, maxSpeed, 2.0f * Time.deltaTime);
-            }
-            else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime * 0.2f); }
-            anim.SetFloat("speed", (1.0f / maxSpeed) * run);
-            currentVelocity = Vector3.Lerp(currentVelocity, (run * transform.forward.normalized), Time.deltaTime);
-            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, 2.0f * Time.deltaTime);
+            // rb.velocity = Vector3.Lerp(rb.velocity, currentJumpVelocity, 2.0f * Time.deltaTime); 
         }
+       else if (jumpTimer > 0)
+        {
+            CheckGround(1);
+
+jumpObj.active = true;
+            slideObj.active = false;
+            shadowObj.active = true;
+            jumpTimer -= Time.deltaTime;
+            rb.velocity = currentJumpVelocity;
+            // rb.velocity = Vector3.Lerp(rb.velocity, currentJumpVelocity, 2.0f * Time.deltaTime); 
+        }
+        else {
+
+            jumpObj.active = true;
+            slideObj.active = true;
+            shadowObj.active = false;
+            anim.SetBool("jumping", false);
+            anim.SetBool("powerSliding", false);
+
+
+
+
+            if (Input.GetAxis("MouseSlide") != 0  && bumped == false)
+            {
+                
+
+                anim.SetFloat("slideSpeed", Input.GetAxis("MouseSlide"));
+                driftTimer = Mathf.Lerp(driftTimer, 2.0f, Time.deltaTime);
+                transform.Rotate(0, Mathf.Sign(Input.GetAxis("MouseSlide")) * 75 * Time.deltaTime, 0);
+rb.AddForce(Time.deltaTime* transform.right.normalized* -Mathf.Sign(Input.GetAxis("MouseSlide")) * 0.2f, ForceMode.Impulse);
+                slideIndicator.transform.parent.transform.localScale = new Vector3(Mathf.Sign(Input.GetAxis("MouseSlide")), 1, 1);
+                if (slideIndicator.active == false)
+                { slideIndicator.active = true; slideIndicator.GetComponent<Animator>().Play("IntialFire"); }
+
+            }
+           else
+            {
+                if (Input.GetAxis("MouseSlide") == 0)
+                { bumped = false; }
+                
+                anim.SetFloat("slideSpeed", 0);
+                if (driftTimer >= 0.5f) {
+                    // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
+                    run += (run* 0.1f) * driftTimer;
+currentVelocity = transform.forward.normalized* currentVelocity.magnitude * 1.2f;
+rb.AddForce(Time.deltaTime* transform.forward.normalized* driftTimer * 60.0f, ForceMode.Impulse);
+
+                }
+                driftTimer = 0;
+
+
+
+                //transform.LookAt(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z));
+                slideIndicator.active = false;
+                
+                if (Input.GetKey(KeyCode.W))
+                {
+                    if (run< 0.5f) { run = 0.5f; }
+
+                    run = Mathf.Lerp(run, maxSpeed, 2.0f * Time.deltaTime);
+                }
+                else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime* 0.2f); }
+                if (Input.GetKey(KeyCode.Q)) { run = Mathf.Lerp(run, 1.0f, Time.deltaTime* 0.2f); }
+
+                    anim.SetFloat("speed", (1.0f / maxSpeed) * run);
+                currentVelocity = Vector3.Lerp(currentVelocity, (run* transform.forward.normalized), Time.deltaTime);
+                rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, 2.0f * Time.deltaTime);
+            }
+          
+
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                jumpTimer = 0.8f;
+                if (driftTimer <= 0) { currentJumpVelocity = rb.velocity* run * 0.05f; } else { currentJumpVelocity = rb.velocity* driftTimer; }
+
+                //Debug.Log("1 jump mag:" + currentJumpVelocity.magnitude);
+                if (currentJumpVelocity.magnitude< 5) { currentJumpVelocity *= 1.5f; }
+                if (currentJumpVelocity.magnitude< 15) { currentJumpVelocity *= 1.5f; }
+                if (currentJumpVelocity.magnitude > 35) { currentJumpVelocity *= 0.3f; }
+               // Debug.Log("2 jump mag:" + currentJumpVelocity.magnitude);
+                anim.SetBool("jumping", true);
+                anim.Play("jump");
+                slideIndicator.active = false;
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                powerSlideTimer = 0.8f;
+                if (driftTimer <= 1) { currentPowerSlideVelocity = rb.velocity* (1 + run) * 0.05f; } else { currentPowerSlideVelocity = rb.velocity* driftTimer; }
+
+                Debug.Log("1 jump mag:" + currentPowerSlideVelocity);
+                if (currentPowerSlideVelocity.magnitude< 15) { currentPowerSlideVelocity *= 1.5f; }
+                if (currentPowerSlideVelocity.magnitude > 35) { currentPowerSlideVelocity *= 0.3f; }
+                 Debug.Log("2 jump mag:" + currentPowerSlideVelocity);
+                anim.SetBool("powerSliding", true);
+                anim.Play("powerSlide");
+                //slideIndicator.active = false;
+            }
+            if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+                powerSlideTimer = 0; anim.SetBool("powerSliding", false);
+            }
+        }
+        if (Input.GetAxis("Horizontal") != 0)
+        {
+            targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.right.normalized.x* 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.x, transform.position.y, camfoward.transform.right.normalized.z* 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.z) - transform.position);
+            step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+
+        }
+
         else
         {
-            anim.SetFloat("slideSpeed", Input.GetAxis("MouseSlide"));
-            driftTimer = Mathf.Lerp(driftTimer, 3.0f, Time.deltaTime);
-            transform.Rotate(0, Mathf.Sign(Input.GetAxis("MouseSlide")) * 75 * Time.deltaTime, 0);
-            rb.AddForce(Time.deltaTime * transform.right.normalized * -Mathf.Sign(Input.GetAxis("MouseSlide")) * 0.2f, ForceMode.Impulse);
-            slideIndicator.transform.parent.transform.localScale = new Vector3(Mathf.Sign(Input.GetAxis("MouseSlide")), 1, 1);
-            if (slideIndicator.active == false)
-            { slideIndicator.active = true; slideIndicator.GetComponent<Animator>().Play("IntialFire"); }
-
+            targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z) - transform.position);
+            step = Mathf.Min(2 * Time.deltaTime, 1.5f);
         }
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
 
     }
 
