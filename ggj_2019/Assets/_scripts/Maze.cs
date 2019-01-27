@@ -54,7 +54,7 @@ public class Maze : MonoBehaviour {
 
         if (player == null) { player = GameObject.Find("Player"); }
         player.active = true;
-        GameObject.Find("CameraParent").GetComponent<ThirdpersonCamera>().enabled = true;
+        GameObject.Find("CameraParent").GetComponent<ThirdpersonCamera>().StartRound();
     }
 
     private void CreatePassageInSameRoom(MazeCell cell, MazeCell otherCell, MazeDirection direction)

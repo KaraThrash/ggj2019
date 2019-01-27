@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MenuUI : MonoBehaviour
 {
+    public GameObject creditsImage;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,4 +16,8 @@ public class MenuUI : MonoBehaviour
     {
         
     }
+    public void OpenCredits()
+    { creditsImage.active = true; }
+    public void CloseCredits()
+    { creditsImage.active = false; }
 }

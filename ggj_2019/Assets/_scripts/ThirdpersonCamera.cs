@@ -25,7 +25,7 @@ public class ThirdpersonCamera : MonoBehaviour
     private Quaternion m_CameraTargetRot;
     private bool m_cursorIsLocked = true;
 
-    public bool useController;
+    public bool useController,gameOn;
     public float xRot;
     public float yRot;
     public void Start()
@@ -33,52 +33,21 @@ public class ThirdpersonCamera : MonoBehaviour
         m_CharacterTargetRot = transform.rotation;
 
     }
+    public void StartRound()
+    {
+        gameOn = true;
+        transform.rotation = target.transform.rotation;
+    }
     public void Update()
 
     {
-        transform.position = target.transform.position;
-        targetRotation = Quaternion.LookRotation(new Vector3((target.transform.forward.x * 5) + target.transform.position.x, 0, (target.transform.forward.z * 5) + target.transform.position.z) - transform.position);
-        step = Mathf.Min(2 * Time.deltaTime, 1.0f);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
-
-       // if (useController == false)
-       // {
-       //     yRot = Input.GetAxis("Mouse X") * XSensitivity;
-       //     xRot = Input.GetAxis("Mouse Y") * YSensitivity;
-       // }
-       // else
-       // {
-       //     yRot = Input.GetAxis("4th Axis") * XSensitivity;
-       //     xRot = Input.GetAxis("5th Axis") * -YSensitivity;
-       // }
-
-       //// m_CharacterTargetRot *= Quaternion.Euler(-xRot, yRot, 0);
-       // //   m_CameraTargetRot *= Quaternion.Euler(-xRot, 0f, 0f);
-       // Quaternion rotationDelta = Quaternion.FromToRotation(transform.forward, target.transform.forward);
-
-
-       // if (clampVerticalRotation)
-       //     m_CameraTargetRot = ClampRotationAroundXAxis(m_CameraTargetRot);
-
-       // if (smooth)
-       // {
-       //     transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
-       //         smoothTime * Time.deltaTime);
-       //     transform.rotation = Quaternion.Slerp(transform.rotation, m_CharacterTargetRot,
-       //         smoothTime * Time.deltaTime);
-       // }
-       // else
-       // {
-       //     transform.eulerAngles = new Vector3(transform.eulerAngles.x - xRot, transform.eulerAngles.y + yRot, 0); //m_CharacterTargetRot;
-       //     target.transform.eulerAngles = new Vector3(0, target.transform.eulerAngles.y + yRot, 0);
-       //     //targetRotation = Quaternion.LookRotation(myfwdobj.transform.position - target.transform.position);
-       //     //step = Mathf.Min(4 * Time.deltaTime, 1.5f);
-       //     //target.transform.rotation = Quaternion.Lerp(target.transform.rotation, targetRotation, step);
-
-
-       // }
-
-       // UpdateCursorLock();
+        if (gameOn == true)
+        {
+            transform.position = target.transform.position;
+            targetRotation = Quaternion.LookRotation(new Vector3((target.transform.forward.x * 5) + target.transform.position.x, 0, (target.transform.forward.z * 5) + target.transform.position.z) - transform.position);
+            step = Mathf.Min(2 * Time.deltaTime, 1.0f);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
+        }
     }
 
     public void SetCursorLock(bool value)
