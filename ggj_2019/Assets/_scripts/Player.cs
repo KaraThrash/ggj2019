@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public GameObject cam,camfoward,angleDetection,slideIndicator;
+    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject;
     public Transform currentCheckpoint,checkPoints;
     public int currentCheckPoint;
     public float pullSpeed;
     private Rigidbody rb;
+    private Animator anim;
     public float maxSpeed,currentFriction,currentVelMag, gravity,frictionApplySpeed,groundCheckDistance, sideslidespeed,currentSlideSpeed,driftTimer,sideRun,run;
     public Vector3 currentVelocity,currentSlideVelocity;
     public bool canJump,sliding,controllerOn;
@@ -19,12 +20,15 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        anim = spriteObject.GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        spriteObject.transform.position = transform.position;
+        spriteObject.transform.rotation = cam.transform.rotation;
         if (controllerOn == true) { ControllerControls(); }
         else
         {
@@ -41,12 +45,15 @@ public class Player : MonoBehaviour
     }
     public void ControllerControls()
     {
+        
         if (Input.GetAxis("3rd Axis") == 0)
         {
-            if (driftTimer >= 1) {
-               // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
-                currentVelocity = transform.forward.normalized * rb.velocity.magnitude;
-                rb.AddForce(Time.deltaTime * transform.forward.normalized * driftTimer *  35.0f, ForceMode.Impulse);
+            anim.SetFloat("slideSpeed", 0);
+            if (driftTimer >= 0.5f) {
+                // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
+                run += (run * 0.1f) * driftTimer;
+               currentVelocity = transform.forward.normalized * currentVelocity.magnitude  * 1.2f;
+                rb.AddForce(Time.deltaTime * transform.forward.normalized * driftTimer *  60.0f, ForceMode.Impulse);
 
             }
             driftTimer = 0;
@@ -69,21 +76,25 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
             if ( Input.GetKey(KeyCode.Joystick1Button1))
             {
+
                 
-            
-            run = Mathf.Lerp(run, 10.0f, 2.0f * Time.deltaTime);
+                run = Mathf.Lerp(run, maxSpeed, 2.0f * Time.deltaTime);
             }
             else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime * 0.2f); }
-
-            currentVelocity =  (run * transform.forward.normalized);
+            anim.SetFloat("speed", (1.0f / maxSpeed) * run );
+            currentVelocity = Vector3.Lerp(currentVelocity,(run * transform.forward.normalized), Time.deltaTime);
             rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, 2.0f * Time.deltaTime);
         }
         else
         {
-            driftTimer += Time.deltaTime;
-            transform.Rotate(0, Mathf.Sign(Input.GetAxis("3rd Axis")) * 60 * Time.deltaTime, 0);
+            anim.SetFloat("slideSpeed", Input.GetAxis("3rd Axis"));
+            driftTimer = Mathf.Lerp(driftTimer,3.0f,Time.deltaTime);
+            transform.Rotate(0, Mathf.Sign(Input.GetAxis("3rd Axis")) * 75 * Time.deltaTime, 0);
             rb.AddForce(Time.deltaTime * transform.right.normalized * -Mathf.Sign(Input.GetAxis("3rd Axis")) * 0.2f, ForceMode.Impulse);
-            slideIndicator.active = true;
+            slideIndicator.transform.parent.transform.localScale = new Vector3(Mathf.Sign(Input.GetAxis("3rd Axis")),1,1);
+            if (slideIndicator.active == false)
+            { slideIndicator.active = true; slideIndicator.GetComponent<Animator>().Play("IntialFire"); }
+           
         }
 
 
