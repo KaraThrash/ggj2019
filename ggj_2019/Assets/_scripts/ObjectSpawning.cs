@@ -19,17 +19,29 @@ public class ObjectSpawning : MonoBehaviour
     }
     public void SpawnObject(Vector3 placeToSpawn)
     {
-        if (Random.Range(0, 3) == 1)
+        float rndx = Random.Range(-2, 3);
+        float rndy = Random.Range(-2, 3);
+
+
+        if (Random.Range(0, 2) == 1)
         {
-           
+
             GameObject clone = Instantiate(
                 largeObjects[Random.Range(0, largeObjects.Count)],
-                new Vector3 (placeToSpawn.x + Random.Range(-2, 3), placeToSpawn.y + 0.4f, placeToSpawn.z + Random.Range(-2, 3)),
+                new Vector3(placeToSpawn.x +rndx , placeToSpawn.y + 0.4f, placeToSpawn.z + rndy),
                 transform.rotation
                 ) as GameObject;
-            clone.transform.Rotate(0, Random.Range(-30,30), 0);
-        }
+            clone.transform.Rotate(0, Random.Range(-30, 30), 0);
 
+            if (Random.Range(0, 6) == 1)
+            {
+                Instantiate(
+                largeObjects[Random.Range(0, largeObjects.Count)],
+                new Vector3(placeToSpawn.x - rndx, placeToSpawn.y + 0.4f, placeToSpawn.z - rndy),
+                transform.rotation
+                );
+            }
+        }
     }
 
 }
