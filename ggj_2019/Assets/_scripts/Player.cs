@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     {
         anim = spriteObject.GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        transform.position = new Vector3(Random.Range(-20,21),0.765f, Random.Range(-20, 21));
     }
 
     // Update is called once per frame

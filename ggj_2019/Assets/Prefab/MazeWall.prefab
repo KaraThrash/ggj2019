@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2216789636965066363}
   - component: {fileID: 1202315101616013340}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: MazeWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -60,7 +60,7 @@ GameObject:
   - component: {fileID: 2531301426295766986}
   - component: {fileID: 4016521338926745820}
   - component: {fileID: 3705492782276707717}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}

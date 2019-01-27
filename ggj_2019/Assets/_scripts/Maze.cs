@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Maze : MonoBehaviour {
-
+    public GameObject player;
 	public IntVector2 size;
 
 	public MazeCell cellPrefab;
@@ -44,7 +44,13 @@ public class Maze : MonoBehaviour {
 			yield return delay;
 			DoNextGenerationStep(activeCells);
 		}
-	}
+        transform.localScale = new Vector3(8,8,8);
+        Debug.Log("end?  ");
+       
+        if (player == null) { player = GameObject.Find("Player"); }
+        player.active = true;
+        GameObject.Find("CameraParent").GetComponent<ThirdpersonCamera>().enabled = true;
+    }
 
     private void CreatePassageInSameRoom(MazeCell cell, MazeCell otherCell, MazeDirection direction)
     {
@@ -71,6 +77,7 @@ public class Maze : MonoBehaviour {
 		int currentIndex = activeCells.Count - 1;
 		MazeCell currentCell = activeCells[currentIndex];
 		if (currentCell.IsFullyInitialized) {
+          
 			activeCells.RemoveAt(currentIndex);
 			return;
 		}

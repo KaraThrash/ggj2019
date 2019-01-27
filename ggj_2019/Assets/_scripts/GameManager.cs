@@ -2,8 +2,8 @@
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
-
-	public Maze mazePrefab;
+    public GameObject player;
+    public Maze mazePrefab;
 
 	private Maze mazeInstance;
 
@@ -19,7 +19,9 @@ public class GameManager : MonoBehaviour {
 
 	private void BeginGame () {
 		mazeInstance = Instantiate(mazePrefab) as Maze;
-		StartCoroutine(mazeInstance.Generate());
+        mazeInstance.player = player;
+
+        StartCoroutine(mazeInstance.Generate());
 	}
 
 	private void RestartGame () {
