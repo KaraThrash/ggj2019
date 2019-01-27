@@ -184,7 +184,8 @@ public class Player : MonoBehaviour
                 Debug.Log("1 jump mag:" + currentPowerSlideVelocity);
                 if (currentPowerSlideVelocity.magnitude < 15) { currentPowerSlideVelocity *= 1.5f; }
                 if (currentPowerSlideVelocity.magnitude > 35) { currentPowerSlideVelocity *= 0.3f; }
-                 Debug.Log("2 jump mag:" + currentPowerSlideVelocity);
+                if (currentPowerSlideVelocity.magnitude < 2) { currentPowerSlideVelocity = transform.forward; }
+                Debug.Log("2 jump mag:" + currentPowerSlideVelocity);
                 anim.SetBool("powerSliding", true);
                 anim.Play("powerSlide");
                 //slideIndicator.active = false;
