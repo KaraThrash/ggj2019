@@ -62,6 +62,16 @@ MonoBehaviour:
   - {fileID: 1202315101616013340, guid: 4c982ff64e5075443a809af72263f68b, type: 3}
   - {fileID: 1202315101616013340, guid: 68aebea5da8afa949b239cb38aa53304, type: 3}
   - {fileID: 1202315101616013340, guid: 99dac57b01bbc2841993f55352780a6f, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
+  - {fileID: 1202315101616013340, guid: 5baae1bb33b1acd469690e5c41a3e478, type: 3}
   roomSettings:
   - floorMaterial: {fileID: 2100000, guid: a015234b68a4e41498204b68f9e8be24, type: 2}
     wallMaterial: {fileID: 2100000, guid: eea8c37cf88d18246922e9c811328627, type: 2}
