@@ -9,6 +9,7 @@ TagManager:
   - lava
   - basic
   - checkpoint
+  - pickup
   layers:
   - Default
   - TransparentFX
