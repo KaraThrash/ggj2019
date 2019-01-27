@@ -4,14 +4,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public GameObject cam,camfoward,angleDetection,slideIndicator;
+    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject;
     public Transform currentCheckpoint,checkPoints;
     public int currentCheckPoint;
     public float pullSpeed;
     private Rigidbody rb;
+    private Animator anim;
     public float maxSpeed,currentFriction,currentVelMag, gravity,frictionApplySpeed,groundCheckDistance, sideslidespeed,currentSlideSpeed,driftTimer,sideRun,run;
     public Vector3 currentVelocity,currentSlideVelocity;
-    public bool canJump,sliding;
+    public bool canJump,sliding,controllerOn;
 
     public Quaternion targetRotation;
     public float step;
@@ -19,16 +20,99 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        anim = spriteObject.GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
+        transform.position = new Vector3(Random.Range(-20,21),0.765f, Random.Range(-20, 21));
     }
 
     // Update is called once per frame
     void Update()
     {
+        spriteObject.transform.position = transform.position;
+        spriteObject.transform.rotation = cam.transform.rotation;
+        if (controllerOn == true) { ControllerControls(); }
+        else
+        {
+            KeyboardControls();
+            
+
+        }
+
        
+
+        
+        
+
+    }
+    public void ControllerControls()
+    {
+        
+        if (Input.GetAxis("3rd Axis") == 0)
+        {
+            anim.SetFloat("slideSpeed", 0);
+            if (driftTimer >= 0.5f) {
+                // rb.velocity = transform.forward.normalized * rb.velocity.magnitude;
+                run += (run * 0.1f) * driftTimer;
+               currentVelocity = transform.forward.normalized * currentVelocity.magnitude  * 1.2f;
+                rb.AddForce(Time.deltaTime * transform.forward.normalized * driftTimer *  60.0f, ForceMode.Impulse);
+
+            }
+            driftTimer = 0;
+
+            
+
+            //transform.LookAt(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z));
+            slideIndicator.active = false;
+            if (Input.GetAxis("Horizontal") != 0)
+            {
+                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.right.normalized.x * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.x, transform.position.y, camfoward.transform.right.normalized.z * 15 * Mathf.Sign(Input.GetAxis("Horizontal")) + camfoward.transform.position.z) - transform.position);
+                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+                
+            }
+            
+            else {
+                targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x , transform.position.y, camfoward.transform.position.z) - transform.position);
+                step = Mathf.Min(2 * Time.deltaTime, 1.5f);
+            }
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
+            if ( Input.GetKey(KeyCode.Joystick1Button1))
+            {
+
+                
+                run = Mathf.Lerp(run, maxSpeed, 2.0f * Time.deltaTime);
+            }
+            else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime * 0.2f); }
+            anim.SetFloat("speed", (1.0f / maxSpeed) * run );
+            currentVelocity = Vector3.Lerp(currentVelocity,(run * transform.forward.normalized), Time.deltaTime);
+            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, 2.0f * Time.deltaTime);
+        }
+        else
+        {
+            anim.SetFloat("slideSpeed", Input.GetAxis("3rd Axis"));
+            driftTimer = Mathf.Lerp(driftTimer,3.0f,Time.deltaTime);
+            transform.Rotate(0, Mathf.Sign(Input.GetAxis("3rd Axis")) * 75 * Time.deltaTime, 0);
+            rb.AddForce(Time.deltaTime * transform.right.normalized * -Mathf.Sign(Input.GetAxis("3rd Axis")) * 0.2f, ForceMode.Impulse);
+            slideIndicator.transform.parent.transform.localScale = new Vector3(Mathf.Sign(Input.GetAxis("3rd Axis")),1,1);
+            if (slideIndicator.active == false)
+            { slideIndicator.active = true; slideIndicator.GetComponent<Animator>().Play("IntialFire"); }
+           
+        }
+
+
+        //if (Input.GetAxis("3rd Axis") != 0)
+        //{
+        //    sliding = true;
+        //    transform.Rotate(0, Input.GetAxis("3rd Axis") * 15 * Time.deltaTime, 0);
+        //    rb.AddForce(Time.deltaTime * transform.right.normalized * Input.GetAxis("3rd Axis"), ForceMode.Impulse);
+        //}
+        //else { sliding = false; }
+
+    }
+    public void KeyboardControls()
+    {
         if (sliding == false)
         {
-           
+
             targetRotation = Quaternion.LookRotation(new Vector3(camfoward.transform.position.x, transform.position.y, camfoward.transform.position.z) - transform.position);
             step = Mathf.Min(2 * Time.deltaTime, 1.5f);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, step);
@@ -43,107 +127,45 @@ public class Player : MonoBehaviour
             {
                 sideRun = sideslidespeed;
             }
-            else { sideRun = 0;  }
+            else { sideRun = 0; }
             if (Input.GetKey(KeyCode.W))
             {
-                run = Mathf.Lerp(run, 10.0f , 0.5f * Time.deltaTime);
+                run = Mathf.Lerp(run, 10.0f, 0.5f * Time.deltaTime);
             }
-            else { run = Mathf.Lerp(run, 1.0f,  Time.deltaTime * 0.2f); }
+            else { run = Mathf.Lerp(run, 1.0f, Time.deltaTime * 0.2f); }
 
             currentVelocity = (transform.right.normalized * sideRun) + (run * transform.forward.normalized);
             rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, Time.deltaTime);
         }
-        else {
+        else
+        {
             if (Input.GetKey(KeyCode.A))
             {
                 sideRun = -sideslidespeed;
-                rb.AddForce(Time.deltaTime * transform.right.normalized  * -sideRun, ForceMode.Impulse);
+                rb.AddForce(Time.deltaTime * transform.right.normalized * -sideRun, ForceMode.Impulse);
             }
-             if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D))
             {
                 sideRun = sideslidespeed;
-                rb.AddForce(Time.deltaTime * transform.right.normalized  * -sideRun, ForceMode.Impulse);
+                rb.AddForce(Time.deltaTime * transform.right.normalized * -sideRun, ForceMode.Impulse);
             }
-            transform.Rotate(0, sideRun * 15 * Time.deltaTime,0);
+            transform.Rotate(0, sideRun * 15 * Time.deltaTime, 0);
 
 
             //rb.AddForce(Time.deltaTime * currentVelocity * transform.right.normalized, ForceMode.Impulse);
             slideIndicator.active = true;
         }
-       
         if (Input.GetMouseButton(0))
         { sliding = true; }
-    
+
         if (Input.GetMouseButtonUp(0) && sliding == true)
-        { sliding = false;
+        {
+            sliding = false;
             currentVelocity = currentVelocity.magnitude * 4 * transform.forward.normalized;
-            rb.AddForce(  Time.deltaTime * currentVelocity, ForceMode.Impulse);
+            rb.AddForce(Time.deltaTime * currentVelocity, ForceMode.Impulse);
         }
-        //currentVelMag = currentVelocity.magnitude;
-        //float newy = currentVelocity.y;
-        //float newx =  Mathf.Lerp(currentVelocity.x,0, currentFriction * Time.deltaTime);
-        //float newz = Mathf.Lerp(currentVelocity.z,0, currentFriction * Time.deltaTime);
-        //currentVelocity = new Vector3(newx, newy, newz);
-
-        //if (CheckGround() == true)
-        //{
-        //    if (Input.GetKey(KeyCode.A) )
-        //    {
-        //        driftTimer += Time.deltaTime;
-        //        // rb.AddForce(cam.transform.right * -sideslidespeed * Time.deltaTime,ForceMode.Impulse);
-        //        // currentVelocity -= (new Vector3(cam.transform.right.normalized.x, 0, cam.transform.right.normalized.z) * 3 * Time.deltaTime);
-        //        currentSlideSpeed = Mathf.Lerp(currentSlideSpeed, -sideslidespeed, 5 * Time.deltaTime);
-        //    }
-        //     else if (Input.GetKey(KeyCode.D) )
-        //    {
-        //        driftTimer += Time.deltaTime;
-        //        currentSlideSpeed = Mathf.Lerp(currentSlideSpeed, sideslidespeed, 5 * Time.deltaTime);
-        //        // rb.AddForce(cam.transform.right * sideslidespeed * Time.deltaTime, ForceMode.Impulse);
-        //        // currentVelocity += (new Vector3(cam.transform.right.normalized.x, 0, cam.transform.right.normalized.z) * 3 * Time.deltaTime);
-        //    }
-        //    else {  currentSlideSpeed = Mathf.Lerp(currentSlideSpeed,0, Time.deltaTime); }
-
-
-        //     if (Input.GetKeyUp(KeyCode.D) && driftTimer >= 2)
-        //    {
-        //     // transform.Rotate(0,90,0);
-
-        //        currentVelocity = transform.forward * currentVelMag;
-        //    }
-        //    if (Input.GetKeyUp(KeyCode.A) && driftTimer >= 2)
-        //    {
-        //       // transform.Rotate(0, -90, 0);
-        //        currentVelocity = transform.forward * currentVelMag;
-        //    }
-        //    currentSlideVelocity = Vector3.Lerp(currentSlideVelocity, angleDetection.transform.GetChild(0).transform.forward  , 10.0f * Time.deltaTime);
-        //    //newcurrentVelocity = new Vector3(cam.transform.right.normalized.x * currentSlideSpeed, 0, cam.transform.right.normalized.z * currentSlideSpeed); ;
-        //    newy = Mathf.Clamp(newy - (gravity * Time.deltaTime), -1.0f, 32.0f);
-        //  //  currentVelocity = new Vector3(currentVelocity.x * currentFriction, Mathf.Clamp(currentVelocity.y - (gravity * Time.deltaTime), -1.0f, 32.0f), currentVelocity.z * currentFriction);
-        //}
-        //else
-        //{
-        //    newy =  Mathf.Clamp(newy - (gravity * Time.deltaTime), -20.0f, 32.0f);
-        //  //  currentVelocity = new Vector3(currentVelocity.x * currentFriction, Mathf.Clamp(currentVelocity.y - (gravity * Time.deltaTime), -15.0f, 32.0f), currentVelocity.z * currentFriction);
-        //}
-
-
-        //currentSlideVelocity = Vector3.Lerp(currentSlideVelocity, angleDetection.transform.GetChild(0).transform.forward * currentSlideSpeed, 10.0f * Time.deltaTime);
-        //angleDetection.transform.LookAt(transform.position + new Vector3(currentVelocity.normalized.x, 0, currentVelocity.z));
-        //rb.velocity = currentVelocity + currentSlideVelocity;
-
-
-
-        //// if (rb.velocity.magnitude < maxSpeed) { rb.AddForce(currentVelocity * 5.0f * Time.deltaTime, ForceMode.Impulse); }
-
-        //if (Input.GetKeyDown(KeyCode.Space) && canJump == true)
-        //{
-        //    canJump = false; currentFriction = 1;
-        //    //transform.position = new Vector3(transform.position.x,transform.position.y + 2.0f,transform.position.z);
-        //    currentVelocity = new Vector3(currentVelocity.x, ( (Mathf.Abs(rb.velocity.x) + rb.velocity.z) * 2 ), currentVelocity.z);
-        //   //todo?: foward force when jumping? currentVelocity += (transform.forward * 2 * Time.deltaTime);
-        //}
-
     }
+
     public bool CheckGround()
     {
    
