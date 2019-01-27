@@ -20,8 +20,9 @@ public class GameManager : MonoBehaviour {
 	private void BeginGame () {
 		mazeInstance = Instantiate(mazePrefab) as Maze;
         mazeInstance.player = player;
-
+        mazeInstance.gameManager = this.gameObject;
         StartCoroutine(mazeInstance.Generate());
+
 	}
 
 	private void RestartGame () {

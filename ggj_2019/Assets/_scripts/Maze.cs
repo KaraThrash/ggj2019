@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Maze : MonoBehaviour {
-    public GameObject player;
+    public GameObject player,gameManager;
 	public IntVector2 size;
 
 	public MazeCell cellPrefab;
@@ -46,7 +46,12 @@ public class Maze : MonoBehaviour {
 		}
         transform.localScale = new Vector3(8,8,8);
         Debug.Log("end?  ");
-       
+
+        foreach (Transform go in transform)
+        {
+            gameManager.GetComponent<ObjectSpawning>().SpawnObject(go.transform.position);
+        }
+
         if (player == null) { player = GameObject.Find("Player"); }
         player.active = true;
         GameObject.Find("CameraParent").GetComponent<ThirdpersonCamera>().enabled = true;
