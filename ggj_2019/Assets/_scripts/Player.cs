@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject,jumpObj,slideObj,shadowObj;
+    public GameObject cam,camfoward,angleDetection,slideIndicator,spriteObject,jumpObj,slideObj,shadowObj,proximityObj,lastscoredobj;
+    public ScoreKeeper scoreKeeper;
     public Transform currentCheckpoint,checkPoints;
     public int currentCheckPoint;
     public float pullSpeed;
@@ -52,6 +53,7 @@ public class Player : MonoBehaviour
       
          if (powerSlideTimer > 0)
         {
+            CheckGround(-1);
             slideObj.active = true;
             jumpObj.active = false;
           // powerSlideTimer -= Time.deltaTime;
@@ -72,6 +74,8 @@ public class Player : MonoBehaviour
         }
        else if (jumpTimer > 0)
         {
+            CheckGround(1);
+
             jumpObj.active = true;
             slideObj.active = false;
             shadowObj.active = true;
@@ -243,48 +247,41 @@ public class Player : MonoBehaviour
 
     }
 
-    public bool CheckGround()
+    public void CheckGround(int upordown)
     {
    
         RaycastHit hit;
 
 
 
-        if (Physics.Raycast(transform.position, -transform.up, out hit, groundCheckDistance))
+        if (Physics.Raycast(transform.position, -transform.up, out hit, upordown * groundCheckDistance))
         {
 
-            if (hit.transform.tag == "lava")
+            if (hit.transform.tag == "checkpoint" && lastscoredobj != hit.transform.gameObject)
             {
-                currentFriction = 0.9f;
+                lastscoredobj = hit.transform.gameObject;
+                scoreKeeper.CollectPickup(10);
             }
-            else if (hit.transform.tag == "basic")
-            {
-                currentFriction = 0.1f;
-            }
-            else { currentFriction = 0; }
-
-            return true;
         }
-        else { return false; }
-       
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.transform == currentCheckpoint)
+        if (other.transform.tag == "pickup")
         {
-            currentCheckPoint++;
-            if (currentCheckPoint >= checkPoints.transform.childCount)
-            { currentCheckPoint = 0; }
-             currentCheckpoint = checkPoints.transform.GetChild(currentCheckPoint);
-            cam.GetComponent<ThirdpersonCamera>().checkpoint = currentCheckpoint.gameObject;
+            scoreKeeper.CollectPickup(100);
+            Destroy(other.gameObject);
+           
         }
 
     }
     public void OnCollisionEnter(Collision other)
     {
         jumpTimer = 0;
-        if (other.transform.tag != "basic") { bumped = true; }
+        if (other.transform.tag != "basic") {
+            bumped = true;
+            proximityObj.GetComponent<proximity>().Crashed();
+        }
       
         anim.SetBool("jumping", false);
         canJump = true;
